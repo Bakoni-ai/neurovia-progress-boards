@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Маршрут — канбан</title>
+<style>
+  :root {
+    --bg: #1B1233; --surface: #241A42; --card: #2C2050;
+    --ink: #F3EFFB; --ink-soft: #B6A9DD; --ink-faint: #7C6DA8; --line: #3A2C60;
+
+    --c-start: #FF3B3B; --c-00: #FF8A3D; --c-01: #FFCD3C; --c-02: #8FE04B;
+    --c-03: #2DD4BF; --c-04: #4A9DFF; --c-05: #B366FF; --c-done: #FFD60A;
+
+    --sans: -apple-system, "Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F1FB; --surface: #FFFFFF; --card: #FBFAFF; --ink: #1B1233; --ink-soft: #5B4E85; --ink-faint: #9186B8; --line: #E1D9F2;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F4F1FB; --surface: #FFFFFF; --card: #FBFAFF; --ink: #1B1233; --ink-soft: #5B4E85; --ink-faint: #9186B8; --line: #E1D9F2;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); margin: 0; }
+  body { padding: 3rem 1.25rem 4rem; }
+  .page { max-width: 1180px; margin: 0 auto; }
+
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint); }
+  h1 { font-size: clamp(1.9rem, 4.5vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; margin: 0.35rem 0 0.5rem; }
+  .lede { color: var(--ink-soft); max-width: 60ch; font-size: 0.96rem; line-height: 1.5; margin: 0 0 2rem; }
+
+  .board-scroll { overflow-x: auto; padding-bottom: 0.75rem; margin: 0 -0.25rem; }
+  .board { display: grid; grid-auto-flow: column; grid-auto-columns: 208px; gap: 0.9rem; padding: 0 0.25rem; }
+
+  .col-head {
+    border-radius: 0.7rem 0.7rem 0 0;
+    padding: 0.6rem 0.75rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #1B1233;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .col-head-left { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+  .col-icon {
+    flex-shrink: 0;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+  .col-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .col-head .n { font-family: var(--mono); font-size: 1.1rem; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .col-body {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: none;
+    border-radius: 0 0 0.7rem 0.7rem;
+    min-height: 220px;
+    padding: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.83rem;
+    font-weight: 600;
+  }
+  .empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 0.78rem;
+    font-style: italic;
+    border: 1px dashed var(--line);
+    border-radius: 0.5rem;
+    padding: 1rem 0.6rem;
+  }
+
+  .stamp { margin-top: 2rem; font-family: var(--mono); font-size: 0.74rem; color: var(--ink-faint); }
+  .back { display: inline-block; margin-bottom: 1.5rem; color: var(--ink-faint); font-family: var(--mono); font-size: 0.78rem; text-decoration: none; }
+  .back:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="./index.html">← все доски</a>
+  <div class="eyebrow">NEUROVIA · ПОТОК 3</div>
+  <h1>Доска маршрута</h1>
+  <p class="lede">Каждая карточка — участница на своём этапе. Листайте вбок, чтобы увидеть все восемь остановок от старта до готового продукта.</p>
+
+  <div class="board-scroll"><div class="board" id="board"></div></div>
+  <div class="stamp">Обновлено: 22 июля 2026 · 22 участницы</div>
+</div>
+
+<script>
+  const COLS = [
+    { key: "start", icon: "🚩", title: "Старт", color: "var(--c-start)", people: ["Анэля Нурбаева","Асель Жумагулова"] },
+    { key: "00", icon: "✨", title: "Тетрадь 00", color: "var(--c-00)", people: ["Диана Каримова"] },
+    { key: "01", icon: "⭐", title: "Тетрадь 01", color: "var(--c-01)", people: ["Ирина Маскалева","Гульжазира"] },
+    { key: "02", icon: "🌟", title: "Тетрадь 02", color: "var(--c-02)", people: ["Елена Солопова","Зиба Сатвалдинова","Асема Жарасова","Байсал Ауганбай","Яна Ерошенко","Мария Шаймерденова"] },
+    { key: "03", icon: "💎", title: "Тетрадь 03", color: "var(--c-03)", people: ["Элис Каблукова","Светлана Петухова","Виолетта Бушанова","Анастасия Юрченко","Эрита Абдибаева","Ольга Манай","Гульнафис Шыбынтаева","Айжан Хамит"] },
+    { key: "04", icon: "🔮", title: "Тетрадь 04", color: "var(--c-04)", people: ["Асель Сейсекенова","Эльмира Жай","Гульмира Турмухамбетова"] },
+    { key: "05", icon: "🏆", title: "Тетрадь 05", color: "var(--c-05)", people: [] },
+    { key: "done", icon: "🎉", title: "Готово", color: "var(--c-done)", people: [] },
+  ];
+
+  document.getElementById("board").innerHTML = COLS.map(c => `
+    <div>
+      <div class="col-head" style="background:${c.color}">
+        <span class="col-head-left"><span class="col-icon">${c.icon}</span><span class="col-title">${c.title}</span></span><span class="n">${c.people.length}</span>
+      </div>
+      <div class="col-body">
+        ${c.people.length
+          ? c.people.map(p => `<div class="card">${p}</div>`).join("")
+          : `<div class="empty">Пока никого</div>`}
+      </div>
+    </div>
+  `).join("");
+</script>
+</body>
+</html>

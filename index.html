@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neurovia · Прогресс потока 3</title>
+<style>
+  :root { --bg:#181119; --card:#231a29; --ink:#F3EFFB; --ink-soft:#B6A9DD; --accent:#E3B34F; --line:#342a3c; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#F6F1E4; --card:#FFFFFF; --ink:#12201C; --ink-soft:#5B4E85; --accent:#C08829; --line:#e4ddce; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system,"Segoe UI",Roboto,Arial,sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+  .wrap { max-width: 560px; width: 100%; }
+  h1 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+  .card {
+    display: block; background: var(--card); border: 1px solid var(--line); border-radius: 0.9rem;
+    padding: 1.1rem 1.3rem; margin-bottom: 0.9rem; text-decoration: none; color: var(--ink);
+  }
+  .card:hover { border-color: var(--accent); }
+  .card .t { font-weight: 700; font-size: 1.1rem; }
+  .card .d { color: var(--ink-soft); font-size: 0.88rem; margin-top: 0.2rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Neurovia · Поток 3 — Прогресс</h1>
+  <a class="card" href="./students.html">
+    <div class="t">🚩 Доска маршрута</div>
+    <div class="d">Индивидуальный прогресс каждой участницы по тетрадям</div>
+  </a>
+  <a class="card" href="./troikas.html">
+    <div class="t">🏆 Прогресс троек</div>
+    <div class="d">Рейтинг 7 троек: тетради, созвоны, упражнение</div>
+  </a>
+</div>
+</body>
+</html>

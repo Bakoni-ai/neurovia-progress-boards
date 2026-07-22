@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прогресс троек — Neurovia</title>
+<style>
+  :root {
+    --ink: #12201C;
+    --paper: #F6F1E4;
+    --paper-raised: #FFFFFF;
+    --accent: #C08829;
+    --accent-2: #3E7C6B;
+    --rust: #B5563A;
+    --line: rgba(18,32,28,0.14);
+    --ink-soft: rgba(18,32,28,0.62);
+    --ink-faint: rgba(18,32,28,0.4);
+
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    --sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #EDE7D6;
+      --paper: #12201C;
+      --paper-raised: #182B25;
+      --accent: #E3B34F;
+      --accent-2: #6FAE9A;
+      --rust: #E08064;
+      --line: rgba(237,231,214,0.16);
+      --ink-soft: rgba(237,231,214,0.66);
+      --ink-faint: rgba(237,231,214,0.42);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #EDE7D6;
+    --paper: #12201C;
+    --paper-raised: #182B25;
+    --accent: #E3B34F;
+    --accent-2: #6FAE9A;
+    --rust: #E08064;
+    --line: rgba(237,231,214,0.16);
+    --ink-soft: rgba(237,231,214,0.66);
+    --ink-faint: rgba(237,231,214,0.42);
+  }
+  :root[data-theme="light"] {
+    --ink: #12201C;
+    --paper: #F6F1E4;
+    --paper-raised: #FFFFFF;
+    --accent: #C08829;
+    --accent-2: #3E7C6B;
+    --rust: #B5563A;
+    --line: rgba(18,32,28,0.14);
+    --ink-soft: rgba(18,32,28,0.62);
+    --ink-faint: rgba(18,32,28,0.4);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font-family: var(--sans); padding: clamp(1.25rem, 3vw, 2.25rem) clamp(1.25rem, 4vw, 2.5rem); }
+  .page { max-width: 1180px; margin: 0 auto; }
+
+  .back { display: inline-block; margin-bottom: 1.25rem; color: var(--ink-faint); font-family: var(--mono); font-size: 0.78rem; text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .eyebrow { font-family: var(--mono); font-size: 1.02rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(2.3rem, 4.8vw, 3.2rem); margin: 0.4rem 0 1.6rem; text-wrap: balance; letter-spacing: -0.01em; }
+
+  /* Two-column layout: podium (narrow, vertical) beside table (wide) */
+  .layout { display: grid; grid-template-columns: minmax(240px, 300px) 1fr; gap: 1.75rem; align-items: start; }
+
+  /* Podium — vertical stack, rank 1 on top */
+  .podium { display: flex; flex-direction: column; gap: 0.85rem; }
+  .podium-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 0.9rem;
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .podium-card.gold { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); box-shadow: 0 0.5rem 1.6rem -0.9rem color-mix(in srgb, var(--accent) 70%, transparent); }
+  .rank-badge {
+    font-family: var(--serif); font-weight: 700; font-size: 1.25rem;
+    width: 2.3rem; height: 2.3rem; border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--paper); border: 1.5px solid var(--line); color: var(--ink-soft);
+  }
+  .gold .rank-badge { background: var(--accent); border-color: var(--accent); color: var(--paper-raised); }
+  .silver .rank-badge { border-color: var(--accent-2); color: var(--accent-2); }
+  .bronze .rank-badge { border-color: var(--rust); color: var(--rust); }
+  .podium-info { flex: 1; min-width: 0; }
+  .podium-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; line-height: 1.2; text-wrap: balance; }
+  .podium-people { font-size: 0.86rem; color: var(--ink-faint); line-height: 1.35; }
+  .podium-score-wrap { text-align: right; flex-shrink: 0; }
+  .podium-score { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1.7rem; font-weight: 600; color: var(--accent); line-height: 1; }
+  .podium-score-label { font-size: 0.68rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.15rem; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 0.75rem; background: var(--paper-raised); }
+  table { width: 100%; border-collapse: collapse; font-size: 1.12rem; min-width: 640px; }
+  thead th {
+    text-align: left; font-family: var(--sans); font-weight: 600; font-size: 0.86rem;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint);
+    padding: 1rem 0.9rem; border-bottom: 1px solid var(--line);
+  }
+  thead th.num, td.num { text-align: right; }
+  tbody td { padding: 1.05rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .rank-cell { font-family: var(--serif); font-weight: 700; font-size: 1.2rem; color: var(--ink-soft); width: 2.2rem; }
+  .team-name { font-weight: 600; font-size: 1.15rem; }
+  .team-people { font-size: 0.92rem; color: var(--ink-faint); }
+  .score-cell { font-weight: 700; color: var(--accent); font-size: 1.3rem; }
+  .calls-chip {
+    display: inline-block; font-family: var(--mono); font-size: 0.94rem;
+    padding: 0.2rem 0.6rem; border-radius: 1rem; font-variant-numeric: tabular-nums;
+  }
+  .calls-chip.active { background: color-mix(in srgb, var(--accent-2) 18%, transparent); color: var(--accent-2); }
+  .calls-chip.none { background: color-mix(in srgb, var(--rust) 14%, transparent); color: var(--rust); }
+
+  .stamp { margin-top: 1.75rem; font-family: var(--mono); font-size: 0.76rem; color: var(--ink-faint); display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+  .stamp .dot { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--accent-2); display: inline-block; }
+
+  @media (max-width: 680px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="./index.html">← все доски</a>
+  <div class="eyebrow">Neurovia · Поток 3 · Работа в тройках</div>
+  <h1>Прогресс троек</h1>
+
+  <div class="layout">
+    <div class="podium" id="podium"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Тройка</th>
+            <th class="num">Тетради</th>
+            <th class="num">Созвоны</th>
+            <th class="num">Упражнение</th>
+            <th class="num">Балл</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="stamp"><span class="dot"></span>Обновлено: 22 июля 2026, вручную · 7 троек</div>
+</div>
+
+<script>
+  const TEAMS = [
+    { name: "Тройка 3", people: "Диана, Виолетта, Гульнафис", tetrad: 42.9, calls: 2, score: 0, total: 41.4 },
+    { name: "Тройка 7", people: "Асемгуль, Светлана, Ольга", tetrad: 47.6, calls: 2, score: 0, total: 43.8 },
+    { name: "Тройка 4", people: "Байсал, Асель С., Айжан", tetrad: 52.4, calls: 0, score: null, total: 26.2 },
+    { name: "Тройка 2", people: "Зиба, Анастасия, Элис", tetrad: 52.4, calls: 0, score: null, total: 26.2 },
+    { name: "Тройка 1", people: "Яна, Гульмира, Ирина", tetrad: 38.1, calls: 0, score: null, total: 19.0 },
+    { name: "Тройка 5", people: "Елена, Эльмира, Анэля", tetrad: 33.3, calls: 0, score: null, total: 16.7 },
+    { name: "Тройка 6", people: "Эрита, Мария, Гульжазира, Асель Ж.", tetrad: 25.0, calls: 0, score: null, total: 12.5 },
+  ].sort((a, b) => b.total - a.total);
+
+  const RANK_CLASS = ["gold", "silver", "bronze"];
+  const podium = document.getElementById("podium");
+  podium.innerHTML = TEAMS.slice(0, 3).map((t, rank) => `
+    <div class="podium-card ${RANK_CLASS[rank]}">
+      <div class="rank-badge">${rank + 1}</div>
+      <div class="podium-info">
+        <div class="podium-name">${t.name}</div>
+        <div class="podium-people">${t.people}</div>
+      </div>
+      <div class="podium-score-wrap">
+        <div class="podium-score">${t.total.toFixed(1)}</div>
+        <div class="podium-score-label">баллов</div>
+      </div>
+    </div>`
+  ).join("");
+
+  document.getElementById("tbody").innerHTML = TEAMS.map((t, i) => `
+    <tr>
+      <td class="rank-cell">${i + 1}</td>
+      <td>
+        <div class="team-name">${t.name}</div>
+        <div class="team-people">${t.people}</div>
+      </td>
+      <td class="num">${t.tetrad.toFixed(1)}%</td>
+      <td class="num"><span class="calls-chip ${t.calls > 0 ? "active" : "none"}">${t.calls > 0 ? t.calls : "нет"}</span></td>
+      <td class="num">${t.score === null ? "—" : t.score.toFixed(1)}</td>
+      <td class="num score-cell">${t.total.toFixed(1)}</td>
+    </tr>
+  `).join("");
+</script>
+</body>
+</html>
