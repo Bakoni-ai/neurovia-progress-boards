@@ -146,8 +146,7 @@
             <th>Тройка</th>
             <th class="num">Тетради</th>
             <th class="num">Созвоны</th>
-            <th class="num">Упражнение</th>
-            <th class="num">Балл</th>
+            <th>Упражнение</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -155,19 +154,19 @@
     </div>
   </div>
 
-  <div class="stamp"><span class="dot"></span>Обновлено: 22 июля 2026, вручную · 7 троек</div>
+  <div class="stamp"><span class="dot"></span>Обновлено: 24 июля 2026, вручную · 7 троек · рейтинг — только тетради</div>
 </div>
 
 <script>
   const TEAMS = [
-    { name: "Тройка 4", people: "Байсал, Асель С., Айжан", tetrad: 57.1, calls: 4, score: 4, total: 72.6 },
-    { name: "Тройка 2", people: "Зиба, Анастасия, Элис", tetrad: 52.4, calls: 4, score: 1, total: 52.2 },
-    { name: "Тройка 5", people: "Елена, Эльмира, Анэля", tetrad: 38.1, calls: 4, score: 0, total: 39.0 },
-    { name: "Тройка 3", people: "Диана, Виолетта, Гульнафис", tetrad: 42.9, calls: 3, score: 0, total: 36.4 },
-    { name: "Тройка 7", people: "Асемгуль, Светлана, Ольга", tetrad: 52.4, calls: 2, score: 0, total: 36.2 },
-    { name: "Тройка 1", people: "Яна, Гульмира, Ирина", tetrad: 47.6, calls: 0, score: null, total: 23.8 },
-    { name: "Тройка 6", people: "Эрита, Мария, Гульжазира, Асель Ж.", tetrad: 32.1, calls: 0, score: null, total: 16.1 },
-  ].sort((a, b) => b.total - a.total);
+    { name: "Тройка 4", people: "Байсал, Асель С., Айжан", tetrad: 57.1, calls: 4, exercise: "Да, по шаблону (30-сек формула)" },
+    { name: "Тройка 2", people: "Зиба, Анастасия, Элис", tetrad: 52.4, calls: 4, exercise: "Уточняется" },
+    { name: "Тройка 7", people: "Асемгуль, Светлана, Ольга", tetrad: 52.4, calls: 2, exercise: "Созванивались, не по шаблону" },
+    { name: "Тройка 1", people: "Яна, Гульмира, Ирина", tetrad: 47.6, calls: 0, exercise: "Не созванивались" },
+    { name: "Тройка 3", people: "Диана, Виолетта, Гульнафис", tetrad: 42.9, calls: 3, exercise: "Созванивались, не по шаблону" },
+    { name: "Тройка 5", people: "Елена, Эльмира, Анэля", tetrad: 38.1, calls: 4, exercise: "Созванивались, не по шаблону" },
+    { name: "Тройка 6", people: "Эрита, Мария, Гульжазира, Асель Ж.", tetrad: 32.1, calls: 0, exercise: "Не созванивались" },
+  ].sort((a, b) => b.tetrad - a.tetrad);
 
   const RANK_CLASS = ["gold", "silver", "bronze"];
   const podium = document.getElementById("podium");
@@ -179,8 +178,8 @@
         <div class="podium-people">${t.people}</div>
       </div>
       <div class="podium-score-wrap">
-        <div class="podium-score">${t.total.toFixed(1)}</div>
-        <div class="podium-score-label">баллов</div>
+        <div class="podium-score">${t.tetrad.toFixed(1)}%</div>
+        <div class="podium-score-label">по тетрадям</div>
       </div>
     </div>`
   ).join("");
@@ -192,10 +191,9 @@
         <div class="team-name">${t.name}</div>
         <div class="team-people">${t.people}</div>
       </td>
-      <td class="num">${t.tetrad.toFixed(1)}%</td>
+      <td class="num score-cell">${t.tetrad.toFixed(1)}%</td>
       <td class="num"><span class="calls-chip ${t.calls > 0 ? "active" : "none"}">${t.calls > 0 ? t.calls : "нет"}</span></td>
-      <td class="num">${t.score === null ? "—" : t.score.toFixed(1)}</td>
-      <td class="num score-cell">${t.total.toFixed(1)}</td>
+      <td>${t.exercise}</td>
     </tr>
   `).join("");
 </script>
